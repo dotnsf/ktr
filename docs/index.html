@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<title>Knee Tap Rhythm</title>
+<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script src="./abcjs_basic_2.3-min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<!--
+<script src="./mqttws31.js"></script>
+<script src="./ibmiotquickstart.js"></script>
+-->
+
+<link rel="shortcut icon" href="./icon.png" type="image/png"/>
+<link rel="icon" href="./icon.png" type="image/png"/>
+<link rel="apple-touch-icon" href="./icon.png"/>
+
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="KTR"/>
+
+<!-- // OGP tags -->
+<meta property="og:title" content="KTR"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://dotnsf.github.io/ktr/"/>
+<meta property="og:image" content="https://dotnsf.github.io/ktr/icon.png"/>
+<meta property="og:site_name" content="KTR"/>
+<meta property="og:description" content="KTR : Knee Tapping Rhythm"/>
+<!-- OGP tags // -->
+
+<!-- // Twitter Card -->
+<meta property="twitter:card" content="summary"/>
+<meta property="twitter:site" content="@dotnsf"/>
+<meta property="twitter:creator" content="@dotnsf"/>
+<meta property="twitter:url" content="https://dotnsf.github.io/ktr/"/>
+<meta property="twitter:image" content="https://dotnsf.github.io/ktr/icon.png"/>
+<meta property="twitter:title" content="KTR"/>
+<meta property="twitter:description" content="KTR : Knee Tapping Rhythm"/>
+<!-- Twitter Card // -->
+
+<style type="text/css">
+html, body{
+  height: 100%;
+  text-align: center;
+  background-color: #fafafa;
+  font-size: 20px;
+  color: #333;
+}
+body{
+  background-color: #ffffcc;
+  /*padding-top: 20px;*/
+}
+body.onRec{
+  background-color: #ffcccc;
+}
+#mycanvas{
+  border: 1px solid #333;
+  background-color: #ccffcc;
+}
+.nav-tabs .nav-link.active{
+  background-color: transparent;
+}
+.nav-link{
+  font-size: 14px;
+}
+th, select{
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!--
+  <div id="deviceid"> - </div>
+  -->
+  <div>
+    <table class="table">
+      <tr><th>振動</th><th>パック</th><th>秒/小節</th></tr>
+      <tr>
+        <th>
+          <select id="select_sentinent">
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3">0.3</option>
+            <option value="0.4">0.4</option>
+            <option value="0.5">0.5</option>
+            <option value="0.6">0.6</option>
+            <option value="0.7">0.7</option>
+            <option value="0.8">0.8</option>
+            <option value="0.9">0.9</option>
+            <option value="1.0">1.0</option>
+            <option value="1.1">1.1</option>
+            <option value="1.2">1.2</option>
+            <option value="1.3">1.3</option>
+            <option value="1.4">1.4</option>
+            <option value="1.5">1.5</option>
+            <option value="1.6">1.6</option>
+            <option value="1.7">1.7</option>
+            <option value="1.8">1.8</option>
+            <option value="1.9">1.9</option>
+            <option value="2.0" selected>2.0</option>
+            <option value="2.1">2.1</option>
+            <option value="2.2">2.2</option>
+            <option value="2.3">2.3</option>
+            <option value="2.4">2.4</option>
+            <option value="2.5">2.5</option>
+            <option value="2.6">2.6</option>
+            <option value="2.7">2.7</option>
+            <option value="2.8">2.8</option>
+            <option value="2.9">2.9</option>
+            <option value="3.0">3.0</option>
+          </select>
+        </th>
+        <th>
+          <select id="select_pack">
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16" selected>16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
+          </select>
+        </th>
+        <th>
+          <select id="select_spp">
+            <option value="1000">1.0</option>
+            <option value="1100">1.1</option>
+            <option value="1200">1.2</option>
+            <option value="1300">1.3</option>
+            <option value="1400">1.4</option>
+            <option value="1500">1.5</option>
+            <option value="1600" selected>1.6</option>
+            <option value="1700">1.7</option>
+            <option value="1800">1.8</option>
+            <option value="1900">1.9</option>
+            <option value="2000">2.0</option>
+            <option value="2100">2.1</option>
+            <option value="2200">2.2</option>
+            <option value="2300">2.3</option>
+            <option value="2400">2.4</option>
+            <option value="2500">2.5</option>
+            <option value="2600">2.6</option>
+            <option value="2700">2.7</option>
+            <option value="2800">2.8</option>
+            <option value="2900">2.9</option>
+            <option value="3000">3.0</option>
+            <option value="3100">3.1</option>
+            <option value="3200">3.2</option>
+            <option value="3300">3.3</option>
+            <option value="3400">3.4</option>
+            <option value="3500">3.5</option>
+            <option value="3600">3.6</option>
+            <option value="3700">3.7</option>
+            <option value="3800">3.8</option>
+            <option value="3900">3.9</option>
+            <option value="4000">4.0</option>
+          </select>
+        </th>
+      </tr>
+    </table>
+  </div>
+
+  <div class="container p-3">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a href="#tab1" data-toggle="tab" class="nav-link active">加速度</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tab2" data-toggle="tab" class="nav-link">左右</a>
+      </li>
+      <li class="nav-item">
+        <a href="#tab3" data-toggle="tab" class="nav-link">リズム</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div id="tab1" class="tab-pane active">
+        <canvas id="mychart1" style="position:relative; width:90%; height: 40%;"></canvas>
+      </div>
+      <div id="tab2" class="tab-pane">
+        <canvas id="mychart2" style="position:relative; width:90%; height: 40%;"></canvas>
+      </div>
+      <div id="tab3" class="tab-pane">
+        <div id="note"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cdiv">
+    <canvas width="80%" height="20px" id="mycanvas"></canvas>
+  </div>
+</div>
+
+<script>
+var baseTimestamp = -1;
+var isTouch = false;
+var motionData = [];
+var rhythmData = [];
+
+var sentinent = 2.0;  //. 反応閾値
+var pack = 16;        //. まとめるデータ数
+var spp = 1600;       //. １小節あたりのミリ秒
+
+//. iOS 13 対応 : https://bagelee.com/webar-vr/ios13-webar-webvr/
+//.             : https://qiita.com/nakakaz11/items/a9be602874bd54819a18
+function ClickRequestDeviceSensor(){
+  //. ユーザーに「許可」を明示させる必要がある
+  DeviceMotionEvent.requestPermission().then( function( response ){
+    if( response === 'granted' ){
+      window.addEventListener( "devicemotion", deviceMotion );
+      $('#sensorrequest').css( 'display', 'none' );
+      $('#cdiv').css( 'display', 'block' );
+    }
+  }).catch( function( e ){
+    console.log( e );
+  });
+}
+
+$(function(){
+  //. URLパラメータ取得
+  var href = window.location.href;
+  var _sentinent = getParam( "sentinent" );
+  if( _sentinent ){ sentinent = parseFloat( _sentinent ); }
+  var _pack = getParam( "pack" );
+  if( _pack ){ pack = parseInt( _pack ); }
+
+  $('#select_sentinent').change( function(){
+    var v = $('#select_sentinent').val();
+    sentinent = parseFloat( v );
+    reloadCharts();
+  });
+  $('#select_pack').change( function(){
+    var v = $('#select_pack').val();
+    pack = parseInt( v );
+    reloadCharts();
+  });
+  $('#select_spp').change( function(){
+    var v = $('#select_spp').val();
+    spp = parseInt( v );
+    reloadCharts();
+  });
+
+  init();
+});
+
+function getParam( name ){
+  var url = window.location.href;
+  name = name.replace( /[\[\\]]/g, "\\$&" );
+  var regex = new RegExp( "[?&]" + name + "(=([\&#]*)|&|#|$)" ),
+      results = regex.exec( url );
+  if( !results ) return null;
+  if( !results[2] ) return '';
+  return decodeURIComponent( results[2].replace( /\+/g, " " ) );
+}
+
+function init(){
+  var canvas = document.getElementById( 'mycanvas' );
+  if( !canvas || !canvas.getContext ){
+    return false;
+  }
+
+  if( window.DeviceMotionEvent ){
+    //. iOS 13 対応 : https://bagelee.com/webar-vr/ios13-webar-webvr/
+    //.             : https://qiita.com/nakakaz11/items/a9be602874bd54819a18
+    if( DeviceMotionEvent.requestPermission && typeof DeviceMotionEvent.requestPermission === 'function' ){
+    }else{
+      window.addEventListener( "devicemotion", deviceMotion );
+    }
+  }
+
+  if( window.TouchEvent ){
+    /*
+    canvas.addEventListener( "touchstart", touchStart );
+    canvas.addEventListener( "touchend", touchEnd );
+    */
+    canvas.addEventListener( "touchend", touchToggle );
+  }
+
+  //. リサイズ時に Canvas サイズを変更する
+  $(window).on( 'load resize', function(){
+    resized();
+  });
+  resized();
+
+  //. スクロール禁止
+  /*
+  $(window).on('touchmove.noScroll', function( e ){
+    e.preventDefault();
+  });
+  */
+  var movefun = function( event ){
+    event.preventDefault();
+  }
+  window.addEventListener( 'touchmove', movefun, { passive: false } );
+}
+
+var canvas_width = 0;
+var canvas_height = 0;
+function resized(){
+  var browserWidth = window.innerWidth;
+  var browserHeight = window.innerHeight;
+  var canvas = document.getElementById( 'mycanvas' );
+  if( canvas && canvas.getContext ){
+    canvas.width = canvas_width = browserWidth * 0.8;
+    canvas.height = canvas_height = browserHeight * 0.2;
+  }
+}
+
+function touchToggle( e ){
+  isTouch = !isTouch;
+  if( isTouch ){
+    baseTimestamp = ( new Date() ).getTime();
+    $('body').addClass( 'onRec' );
+    touchStart( e );
+  }else{
+    $('body').removeClass( 'onRec' );
+    touchEnd( e );
+  }
+}
+
+function touchStart( e ){
+  e.preventDefault();
+  //var obj = e.changedTouches[0];
+  //var touchY = obj.pageY;
+  isTouch = true;
+  motionData = [];
+  rhythmData = [];
+}
+
+function touchEnd( e ){
+  e.preventDefault();
+  isTouch = false;
+
+  reloadCharts();
+}
+
+function reloadCharts(){
+  if( motionData && motionData.length > 0 ){
+    //. グラフ描画
+    var labels = [];
+    var z_data = [];
+    for( var i = 0; i < motionData.length; i ++ ){
+      var mot = motionData[i];
+      labels.push( '' + i );
+      z_data.push( mot['ac'].z );
+    }
+
+    var rhythms = [];
+    //. pack ずつまとめて max - min を探る
+    for( var i = 0; i < motionData.length; i += pack ){
+      var min = 100;
+      var max = -100;
+      var min_idx = -1;
+      var max_idx = -1;
+      for( var j = 0; j < pack && i + j < motionData.length; j ++ ){
+        var motion = motionData[i+j];
+        if( motion.ac.z < min ){ min = motion.ac.z; min_idx = i+j; }
+        if( motion.ac.z > max ){ max = motion.ac.z; max_idx = i+j; }
+      }
+      var rhythm = { msec: motionData[i].ac.msec, min: min, min_idx: min_idx, max: max, max_idx: max_idx };
+      rhythms.push( rhythm );
+    }
+
+    //. pack ずつまとめたデータから割り出す
+    rhythmData = [];
+    for( var i = 0; i < rhythms.length; i ++ ){
+      var rhythm = rhythms[i];
+      if( rhythm.max >= sentinent && rhythm.min <= -1 * sentinent ){
+        if( rhythm.min_idx < rhythm.max_idx ){
+          //. 左
+          rhythmData.push( { msec: rhythm.msec, v: rhythm.min, tap: 'left' } );
+        }else{
+          //. 右
+          rhythmData.push( { msec: rhythm.msec, v: rhythm.max, tap: 'right' } );
+        }
+      }else if( rhythm.max >= sentinent && i < rhythms.length - 1 ){
+        if( rhythms[i+1].min <= -1 * sentinent ){
+          //. 右
+          rhythmData.push( { msec: rhythm.msec, v: rhythm.max, tap: 'right' } );
+        }else{
+          //. 不明
+          rhythmData.push( { msec: rhythm.msec, v: rhythm.max, tap: 'center' } );
+        }
+      }else if( rhythm.min <= -1 * sentinent && i < rhythms.length - 1 ){
+        if( rhythms[i+1].max >= sentinent ){
+          //. 左
+          rhythmData.push( { msec: rhythm.msec, v: rhythm.min, tap: 'left' } );
+        }else{
+          //. 不明
+          rhythmData.push( { msec: rhythm.msec, v: rhythm.min, tap: 'center' } );
+        }
+      }
+    }
+
+    var ctx1 = document.getElementById( 'mychart1' );
+    var myChart1 = new Chart( ctx1, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'vibe',
+          borderWidth: 1,
+          backgroundColor: '#ffaaff',
+          borderColor: '#ff55ff',
+          fill: false,
+          data: z_data
+        }]
+      },
+      options: {
+        title: {
+          display: false,
+          text: '加速度',
+          padding: 3
+        },
+        legend: {
+          labels: {
+            boxWidth: 30,
+            padding: 20
+          },
+          display: false
+        },
+        tooltips: {
+          mode: 'label'
+        }
+      }
+    });
+
+    //motionData = [];
+  }
+
+  if( rhythmData && rhythmData.length > 0 ){
+    //. グラフ描画
+    var plot_data = { left: [], center: [], right: [] };
+    var plot_data_ = [];
+    for( var i = 0; i < rhythmData.length; i ++ ){
+      var rhythm = rhythmData[i];
+
+      var y = 0;
+      if( rhythm.tap == 'right' ){ y = 1; }
+      else if( rhythm.tap == 'left' ){ y = -1; }
+      plot_data[rhythm.tap].push( { x: ( rhythm.msec / 1000 ), y: y } );
+      plot_data_.push( { x: rhythm.msec, y: y } );
+    }
+
+    var ctx2 = document.getElementById( 'mychart2' );
+    var myChart2 = new Chart( ctx2, {
+      type: 'scatter',
+      data: {
+        //labels: labels,
+        datasets: [{
+          label: 'R',
+          borderWidth: 1,
+          backgroundColor: '#ffaaaa',
+          borderColor: '#ff5555',
+          fill: false,
+          data: plot_data.right
+        },
+        {
+          label: 'C',
+          borderWidth: 1,
+          backgroundColor: '#aaffaa',
+          borderColor: '#55ff55',
+          fill: false,
+          data: plot_data.center
+        },
+        {
+          label: 'L',
+          borderWidth: 1,
+          backgroundColor: '#aaaaff',
+          borderColor: '#5555ff',
+          fill: false,
+          data: plot_data.left
+        }]
+      },
+      options: {
+        title: {
+          display: false,
+          text: '左右',
+          padding: 3
+        },
+        legend: {
+          labels: {
+            boxWidth: 30,
+            padding: 20
+          },
+          display: true
+        },
+        tooltips: {
+          mode: 'label'
+        }
+      }
+    });
+
+    var note = "M:4/4\nL:1/4\n";  //https://qiita.com/stkay/items/08e7fe5ec1f5546f89a8
+    var prev_msec = -1;
+    var cnt = 0;
+    for( var i = 0; i < plot_data_.length - 1; i ++ ){
+      var diff_msec = plot_data_[i+1].x - plot_data_[i].x;
+
+      //. 一小節を spp ミリ秒とする
+      while( diff_msec > spp ){
+        diff_msec -= spp;
+      }
+
+      if( ( spp / 2 ) < diff_msec && diff_msec <= spp ){ //2000
+        note += "F4 ";
+        cnt += 16;
+      }else if( ( spp / 4 ) < diff_msec && diff_msec <= ( spp / 2 ) ){ //1000
+        note += "F2 ";
+        cnt += 8;
+      }else if( ( spp / 8 ) < diff_msec && diff_msec <= ( spp / 4 ) ){ //500
+        note += "F ";
+        cnt += 4;
+      }else if( ( spp / 16 ) < diff_msec && diff_msec <= ( spp / 8 ) ){ //250
+        note += "F1/2 ";
+        cnt += 2;
+      }else{ //125
+        note += "F1/4 ";
+        cnt ++;
+      }
+
+      if( cnt >= 16 ){
+        note += " ||\n";
+        cnt = cnt % 16;
+      }
+    }
+    note += "F ||";
+    ABCJS.renderAbc( "note", note );
+
+    //publishMessage( rhythmData );
+
+    //rhythmData = [];
+  }
+}
+
+function deviceMotion( e ){
+  e.preventDefault();
+  if( isTouch ){
+    var ac = e.acceleration;
+
+    var ts = ( new Date() ).getTime();
+    var msec = ts - baseTimestamp;
+    ac.msec = msec;
+
+    var motion = { ac: ac };
+    motionData.push( motion );
+  }
+}
+</script>
+</body>
+</html>
